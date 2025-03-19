@@ -53,12 +53,13 @@ export default function App() {
     setSuggestions([]);
     if (guess.trim().toLowerCase() === currentManga.title.toLowerCase()) {
       setGameOver(true);
-      setFeedback('✅ Correct!');
+      setFeedback(`✅ Correct! The correct answer was: ${currentManga.title}`);
       return;
     }
 
     if (attempts >= 5) {
       setGameOver(true);
+      setAttempts(attempts + 1)
       setFeedback(`❌ Game Over! The correct answer was: ${currentManga.title}`);
       return;
     }
@@ -150,14 +151,18 @@ export default function App() {
               </button>
             ))}
           </div>
+          
+        </div>
+      </div>
+      
+      {!gameOver ? (
+        
+        <div>
           <p>
             {attempts < 6
               ? `${6 - attempts} ${6 - attempts === 1 ? 'guess' : 'guesses'} remaining!`
               : ''}
           </p>
-        </div>
-      </div>
-      {!gameOver ? (<div>
         <form onSubmit={handleGuess} style={{ marginTop: '15px' }}>
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <input
@@ -228,8 +233,39 @@ export default function App() {
         </form>
         <p>{feedback}</p>
       </div>) : (<div>
-        
-      </div>)}
+        {attempts <= 5 ? (
+          <div>
+            <p>Good Job!</p><p>{feedback}</p>
+          </div>
+        ) : (<p>{feedback}</p>)}
+        <button onClick={() => {
+          var result = ''
+          if (feedback.includes('✅')) {
+            result = result + '🟥'.repeat(attempts) + '🟩'
+          } else {
+            result = result + '🟥'.repeat(attempts)
+          }
+          const shareText = `#GuessTheManga #23\n\n${result}\n\nhttps://GuessTheManga.com/23`;
+          navigator.clipboard.writeText(shareText);
+
+          alert('Copied to clipboard!');
+        }}
+        style={{
+          marginTop: '15px',
+          padding: '10px 20px',
+          borderRadius: '20px',
+          backgroundColor: '#28a745', // Green background
+          color: 'white',
+          border: 'none',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          transition: 'background-color 0.3s',
+        }}>
+          Share Result
+        </button>
+      </div>
+    
+    )}
     </div>
   );
 }
