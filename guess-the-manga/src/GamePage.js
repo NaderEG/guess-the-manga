@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 import { mangaData } from './mangaData';
 import { useParams } from "react-router-dom";
 
@@ -14,20 +14,35 @@ const getDaysSinceStart = (startDate) => {
   };
 
 export default function GamePage() {
-  const [guess, setGuess] = useState('');
-  const [feedback, setFeedback] = useState('');
-  const [attempts, setAttempts] = useState(0);
-  const [panelStage, setPanelStage] = useState(0);
-  const [hintIndex, setHintIndex] = useState(0);
-  const [currentView, setCurrentView] = useState(0);
-  const [revealedHints, setRevealedHints] = useState(['']);
-  const [suggestions, setSuggestions] = useState([]);
-  const [gameOver, setGameOver] = useState(false);
-
   const { day } = useParams();
   const dayIndex = parseInt(day, 10) || getDaysSinceStart("2025-03-23");
+
+  const savedProgress = JSON.parse(localStorage.getItem(`progress_${dayIndex}`)) || {
+    attempts: 0,
+    revealedHints: [''],
+    feedback: "",
+    gameOver: false,
+  };
+  const [guess, setGuess] = useState('');
+  const [feedback, setFeedback] = useState(savedProgress.feedback);
+  const [attempts, setAttempts] = useState(savedProgress.attempts);
+  const [panelStage, setPanelStage] = useState(0);
+  const [hintIndex, setHintIndex] = useState(0);
+  const [currentView, setCurrentView] = useState(savedProgress.attempts > 5 ? 5 : savedProgress.attempts);
+  const [revealedHints, setRevealedHints] = useState(savedProgress.revealedHints);
+  const [suggestions, setSuggestions] = useState([]);
+  const [gameOver, setGameOver] = useState(savedProgress.gameOver);
+
+
   const mangaIndex = getDailyMangaIndex(dayIndex, mangaData.length);
   const currentManga = mangaData[mangaIndex];
+
+  useEffect(() => {
+    localStorage.setItem(
+      `progress_${dayIndex}`,
+      JSON.stringify({ attempts, revealedHints, feedback, gameOver })
+    );
+  }, [attempts, revealedHints, feedback, gameOver, dayIndex]);
 
   const handleGuess = (e) => {
     e.preventDefault();
@@ -105,7 +120,7 @@ export default function GamePage() {
           )}
 
           <img
-            src={currentManga.panels[currentView]} // Show selected panel
+            src={currentManga.panels[currentView]}
             alt="Manga Panel"
             style={{ height: '300px', border: '2px solid black' }}
           />
