@@ -5,7 +5,7 @@ const getDaysSinceStart = (startDate) => {
   const start = new Date(startDate);
   const now = new Date();
   const diffTime = now - start;
-  return Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Convert ms to days
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
 };
 
 export default function App() {

@@ -34,7 +34,7 @@ export default function GamePage() {
   const [gameOver, setGameOver] = useState(savedProgress.gameOver);
 
 
-  const mangaIndex = getDailyMangaIndex(dayIndex, mangaData.length);
+  const mangaIndex = getDailyMangaIndex(dayIndex-1, mangaData.length);
   const currentManga = mangaData[mangaIndex];
 
   useEffect(() => {
